@@ -1,0 +1,216 @@
+PROJECT TITLE: Hangman Game
+This is the source code for the execution of this project.
+
+import random
+import tkinter as tk
+from tkinter import messagebox
+
+# Hangman images
+HANGMAN_PICS = [
+    '''
+    ___
+       |  
+       | 
+       |  
+       |''',
+    '''
+    ___
+    O  |
+       | 
+       |
+       |''',
+    '''
+    ___
+    O  |
+    |  |  
+       | 
+       | ''',
+    '''
+    ___
+    O  |
+   /|\ | 
+       |
+       | ''',
+    '''
+    ___
+    O  | 
+   /|\ |  
+    |  | 
+       | ''',
+    '''
+    ___
+    O  | 
+   /|\ |  
+    |  | 
+   / \ | ''',
+   
+]
+
+# List of words to choose from
+words = 'ant baboon badger bat bear beaver camel cat clam cobra cougar coyote crow deer dog donkey duck eagle ferret fox frog goat goose hawk lion lizard llama mole monkey moose mouse mule newt otter owl panda parrot pigeon python rabbit ram rat raven rhino salmon seal shark sheep skunk sloth snake spider stork swan tiger toad trout turkey turtle weasel whale wolf wombat zebra'.split()
+
+# Function to randomly select a word
+def getRandomWord(wordList):
+    return random.choice(wordList)
+
+# Function to display the game board
+def displayBoard(missedLetters, correctLetters, secretWord):
+    canvas.delete("all")
+    canvas.create_text(400, 50, text="HANGMAN GAME", font=("arial", 24), fill="red")
+    canvas.create_text(400, 150, text=HANGMAN_PICS[len(missedLetters)], font=("Courier", 24), fill="blue")
+    canvas.create_text(400, 250, text='\n\n\nMissed letters:\n' + ', '.join(missedLetters), font=("Helvetica", 20), fill="red")
+
+    blanks = ''
+    for letter in secretWord:
+        if letter in correctLetters:
+            blanks += letter
+        else:
+            blanks += '_ '
+    canvas.create_text(400, 350, text=blanks, font=("Helvetica", 24), fill="green")
+
+# Function to get the user's guess
+def getGuess(alreadyGuessed):
+    while True:
+        guess = entry.get().lower()
+        entry.delete(0, tk.END)
+
+        if not guess.isalpha():
+            messagebox.showerror("Error", "Please enter only letters.")
+            return
+        
+        elif guess in alreadyGuessed:
+            messagebox.showwarning("Warning", "You have already guessed that letter. Choose again.")
+        else:
+            return guess
+
+# Function to prompt the user to play again
+def playAgain():
+    return messagebox.askyesno("Play Again?", "Would you like to play again?")
+
+# Function to check the game status (win or lose)
+def checkGameStatus():
+    global missedLetters, correctLetters, secretWord
+
+    if len(missedLetters) == len(HANGMAN_PICS) - 1:
+        messagebox.showinfo("Game Over", "You have run out of guesses! The word was '{}'".format(secretWord))
+        if playAgain():
+            resetGame()
+        else:
+            root.destroy()
+    elif '_' not in displayWord:
+        messagebox.showinfo("Congratulations", "GREAT!!\nYou guessed it! The word is '{}'! \nYou win!".format(secretWord))
+        if playAgain():
+            resetGame()
+        else:
+            root.destroy() 
+            
+# Function to reset the game
+def resetGame():
+    global missedLetters, correctLetters, secretWord, displayWord
+    missedLetters = ''
+    correctLetters = ''
+    secretWord = getRandomWord(words)
+    displayWord = ['_' for _ in secretWord]
+    displayBoard(missedLetters, correctLetters, secretWord)
+
+# Function to process the user's guess
+def processGuess():
+    global missedLetters, correctLetters, secretWord, displayWord
+
+    guess = getGuess(missedLetters + correctLetters)
+
+    if guess in secretWord:
+        correctLetters += guess
+        for i, letter in enumerate(secretWord):
+            if letter == guess:
+                displayWord[i] = guess
+    else:
+        missedLetters += guess
+
+    displayBoard(missedLetters, correctLetters, secretWord)
+    checkGameStatus()
+
+# Function to start the game
+def startGame():
+    global start_button
+    start_button.destroy()
+    launch_game()
+
+# Function to launch the game
+# Function to launch the game
+def launch_game():
+    global root, canvas, frame, entry, button
+    root = tk.Tk()
+    root.title("Hangman Game")
+    root.configure(bg="lavender")  # Set background color to lavender
+
+    # Create a frame to contain the canvas with a border
+    canvas_frame = tk.Frame(root, borderwidth=5, relief="solid", bg="blue")
+    canvas_frame.pack(padx=15, pady=15)  # Add padding to the frame
+
+    # Create the canvas within the frame
+    canvas = tk.Canvas(canvas_frame, width=800, height=500, bg="#92A8D1")  # Set canvas background color
+    canvas.pack()
+
+    frame = tk.Frame(root, bg="black")  # Set frame background color to black
+    frame.place(relx=0.5, rely=0.8, relwidth=0.8, relheight=0.1, anchor='n')
+
+    entry = tk.Entry(frame, font=("Helvetica", 16))
+    entry.place(relwidth=0.65, relheight=1)
+
+    button = tk.Button(frame, text="Guess", font=("Helvetica", 16), command=processGuess, bg="YELLOW")
+    button.place(relx=0.7, relheight=1, relwidth=0.3)
+
+    resetGame()
+
+    root.mainloop()
+
+# Function to start the game
+def startGame():
+    global start_button
+    start_button.destroy()
+    launch_game()
+
+# Create the main window
+root = tk.Tk()
+root.title("Hangman Game")
+root.configure(bg="black")  # Set background color to light blue
+
+# Create a label for the heading with black background and red foreground
+heading_label = tk.Label(root, text="INSTRUCTIONS", font=("Helvetica", 24, "underline"), bg="black", fg="red", justify=tk.CENTER)
+heading_label.pack(expand=True, anchor=tk.CENTER)
+
+# Create a label for the instructions text with white background and black foreground
+instructions_text = "1. The game will randomly select a word.\n" \
+                    "2. You have 6 number of attempts to guess the word.\n" \
+                    "3. Type a letter in the entry box provided and press the 'Guess' button to submit your guess.\n" \
+                    "4. If the letter is in the word, it will be revealed in the word.\n" \
+                    "5. If the letter is not in the word, it will be added to the list of missed letters,\n" \
+                    "    and part of the Hangman will be drawn.\n" \
+                    "6. Continue guessing letters until the Hangman is fully drawn.\n" \
+                    "7. If you guess the word correctly, you win the game!\n" \
+                    "8. If the Hangman is fully drawn before you guess the word, you lose the game.\n"
+
+instructions_label = tk.Label(root, text=instructions_text, font=("Helvetica", 18), bg="black", fg="white", justify=tk.LEFT)
+instructions_label.pack(expand=True, fill=tk.BOTH, anchor=tk.W)
+
+start_button = tk.Button(root, text="Start", font=("Helvetica", 16), command=startGame, bg="white", fg="black", borderwidth=2, relief="solid")  # Add border to the button
+start_button.pack(expand=True, fill=tk.BOTH)  # Adjust to fill the full screen
+  
+root.mainloop()
+
+
+Game logic:
+
+In short, Hangman is a word guessing game where one player thinks of a word and the other player tries to guess it. The guessing player suggests letters one at a time,
+and if the letter is in the word, it gets revealed. If the letter is not in the word, part of a hangman is drawn. The game continues until the word is guessed correctly or the hangman is fully drawn, 
+indicating a loss. It's a fun way to test vocabulary and deduction skills.
+
+Input handling in the Hangman game involves:
+1. Obtaining user guesses.
+2. Validating guesses to ensure they are single alphabetical characters.
+3. Displaying error messages for invalid inputs.
+4. Processing valid guesses to reveal correct letters or progress the game.
+5. Managing the game flow based on guess outcomes, such as winning or losing conditions.
+
+THIS PROJECT WAS MADE BY EQUAL CONTRIBUTION AND EFFORTS OF GAURIKA(1826), DIWANSHI(1821) AND GURMEHAR(1832).
