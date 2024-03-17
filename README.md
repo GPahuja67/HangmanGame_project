@@ -7,6 +7,7 @@ The guessing player has six attempts to figure out the word before the hangman i
 For programming this game, we have used python language. We have implemented functions used in python for displaying the hangman, checking guesses, and updating the game state.
 
 TEAM NAME: Gaurika and friends
+
 Team members:
 1. Gaurika(1826) as MANAGER
 2. Gurmehar(1832) as TESTER
