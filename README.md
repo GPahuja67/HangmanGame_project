@@ -10,8 +10,7 @@ TEAM NAME: Gaurika and friends
 
 Team members:
 1. Gaurika(1826) as MANAGER
-2. Gurmehar(1832) as TESTER
-3. Diwanshi(1821) as DEVELOPER
+2. Gurmehar(1832) as TESTER and DEVELOPER
 
 Instructions:
 1. Choose a word secretly.
